@@ -10,10 +10,10 @@ exec(
  function(error, stdout, stderr) {
       if (error != null) {
         console.log("ERRORE: " + err);
-        return res.status(500).json({ Error: ' + err + ' });
+        return res.status(500).json({ Error: err });
     } else {
         console.log("OK: " + stdout);
-        return res.status(200).json({ success: stdout });
+        return res.status(200).json({ Data: stdout });
       }
     });
 });
