@@ -1,3 +1,98 @@
+-------------------------------
+--   C O M P O S I T I O N   --
+-------------------------------
+MODULE dn_main
+
+---------------------
+--   I N P U T S   --
+---------------------
+IVAR input:
+{
+UNDEF, service140_UMS_ManagementTrip, service140_UMS_TripManagementRequest, service140_RESET, service142_UMS_TripRequest, service142_RESET
+};
+
+-----------------------
+--   O U T P U T S   --
+-----------------------
+IVAR output:
+{
+UNDEF, service140_UMS_concrete4, service140_UMS_concrete3, service140_UMS_concrete2, service140_UMS_concrete1, service140_UMS_TripManagementReply, service140_UMS_concrete5, service142_UMS_TripAlternatives, service142_UMS_concrete2, service142_UMS_concrete1
+};
+
+-------------------------
+--   S E R V I C E S   --
+-------------------------
+--  service140
+VAR service140: {ST2, ST1, ST4, ST3, ST6, ST5, ST8, ST7, ST0};
+ASSIGN
+next(service140) :=
+case
+(service140 = ST1 & input = service140_RESET): ST0;
+(service140 = ST3 & input = service140_RESET): ST0;
+(service140 = ST7 & output = service140_UMS_TripManagementReply): ST8;
+(service140 = ST5 & input = service140_RESET): ST0;
+(service140 = ST4 & output = service140_UMS_concrete4): ST5;
+(service140 = ST7 & input = service140_RESET): ST0;
+(service140 = ST3 & output = service140_UMS_concrete3): ST4;
+(service140 = ST2 & output = service140_UMS_concrete2): ST3;
+(service140 = ST6 & input = service140_RESET): ST0;
+(service140 = ST5 & output = service140_UMS_concrete5): ST6;
+(service140 = ST4 & input = service140_RESET): ST0;
+(service140 = ST2 & input = service140_RESET): ST0;
+(service140 = ST6 & input = service140_UMS_ManagementTrip): ST7;
+(service140 = ST1 & output = service140_UMS_concrete1): ST2;
+(service140 = ST0 & input = service140_UMS_TripManagementRequest): ST1;
+(service140 = ST8 & input = service140_RESET): ST0;
+1:service140;
+esac;
+TRANS ( input = service140_UMS_ManagementTrip) -> (service140 = ST6)
+TRANS ( output = service140_UMS_concrete4) -> (service140 = ST4)
+TRANS ( input = service140_UMS_TripManagementRequest) -> (service140 = ST0)
+TRANS ( output = service140_UMS_concrete3) -> (service140 = ST3)
+TRANS ( output = service140_UMS_concrete2) -> (service140 = ST2)
+TRANS ( input = service140_RESET) -> (service140 = ST2 | service140 = ST1 | service140 = ST4 | service140 = ST3 | service140 = ST6 | service140 = ST5 | service140 = ST8 | service140 = ST7)
+TRANS ( output = service140_UMS_concrete1) -> (service140 = ST1)
+TRANS ( output = service140_UMS_TripManagementReply) -> (service140 = ST7)
+TRANS ( output = service140_UMS_concrete5) -> (service140 = ST5)
+
+--  service142
+VAR service142: {ST2, ST1, ST4, ST3, ST0};
+ASSIGN
+next(service142) :=
+case
+(service142 = ST3 & input = service142_RESET): ST0;
+(service142 = ST1 & input = service142_RESET): ST0;
+(service142 = ST1 & output = service142_UMS_concrete1): ST2;
+(service142 = ST3 & output = service142_UMS_TripAlternatives): ST4;
+(service142 = ST2 & output = service142_UMS_concrete2): ST3;
+(service142 = ST0 & input = service142_UMS_TripRequest): ST1;
+(service142 = ST4 & input = service142_RESET): ST0;
+(service142 = ST2 & input = service142_RESET): ST0;
+1:service142;
+esac;
+TRANS ( input = service142_UMS_TripRequest) -> (service142 = ST0)
+TRANS ( output = service142_UMS_TripAlternatives) -> (service142 = ST3)
+TRANS ( output = service142_UMS_concrete2) -> (service142 = ST2)
+TRANS ( input = service142_RESET) -> (service142 = ST2 | service142 = ST1 | service142 = ST4 | service142 = ST3)
+TRANS ( output = service142_UMS_concrete1) -> (service142 = ST1)
+
+-----------------------
+--   O B J E C T S   --
+-----------------------
+--  SetupTrip
+VAR SetupTrip: {ORGANIZED, INITIAL};
+ASSIGN
+next(SetupTrip) :=
+case
+(input = service140_UMS_ManagementTrip):{(ORGANIZED)};
+1:SetupTrip;
+esac;
+--  ProvideTrip
+VAR ProvideTrip: {TRIP_REQUEST_ACCOMPLISHED, TRIP_MANAGEMENT_ACCOMPLISHED, TRIP_MANAGE_REQUEST_LOADED, TRIP_REQUEST_LOADED, INITIAL};
+ASSIGN
+next(ProvideTrip) :=
+case
+(ProvideTrip = TRIP_MANAGE_REQUEST_LOADED & output = service140_UMS_TripManagementReply): TRIP_MANAGEMENT_ACCOMPLISHED;
 (ProvideTrip = TRIP_REQUEST_ACCOMPLISHED & input = service140_UMS_TripManagementRequest): TRIP_MANAGE_REQUEST_LOADED;
 (ProvideTrip = TRIP_REQUEST_LOADED & output = service142_UMS_TripAlternatives): TRIP_REQUEST_ACCOMPLISHED;
 (ProvideTrip = INITIAL & input = service142_UMS_TripRequest): TRIP_REQUEST_LOADED;
