@@ -1,6 +1,7 @@
 'use strict';
 const express = require('express');
 const converterRoutes = require("./routes/converter")
+const cors = require("cors")
 
 // Constants
 const PORT = process.env.PORT || 3000;
@@ -9,6 +10,7 @@ const HOST = '0.0.0.0';
 // App
 const app = express();
 app.use(express.json())
+app.use(cors({ origin: "*" }))
 app.use("/converter", converterRoutes)
 // app.get("/", () => { })
 
