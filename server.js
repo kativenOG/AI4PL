@@ -12,7 +12,6 @@ const app = express();
 app.use(express.json())
 app.use(cors({ origin: "*" }))
 app.use("/converter", converterRoutes)
-// app.get("/", () => { })
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
@@ -29,4 +28,3 @@ console.log(`Running on http://${HOST}:${PORT}`);
 // });
 // res.send('Hello World');
 // });
-
